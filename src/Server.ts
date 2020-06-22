@@ -47,12 +47,14 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
  *                              Serve front-end content
  ***********************************************************************************/
 
-const viewsDir = path.join(__dirname, 'views');
-app.set('views', viewsDir);
-const staticDir = path.join(__dirname, 'public');
-app.use(express.static(staticDir));
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req: Request, res: Response) => {
-    res.sendFile('index.html', { root: viewsDir });
+    res.render('index', {
+        title: 'TYPESCRIPT-EXPRESS-MPS',
+        content: 'Hello World!',
+    });
 });
 
 // Export express instance
