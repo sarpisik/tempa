@@ -9,6 +9,7 @@ import 'express-async-errors';
 
 import BaseRouter from './routes';
 import logger from '@shared/Logger';
+import { manifestParser, scriptGenerator } from './lib/assets_loader';
 
 // Init express
 const app = express();
@@ -51,9 +52,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req: Request, res: Response) => {
+    const scripts = manifestParser().map(scriptGenerator);
     res.render('index', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'Hello World!',
+        scripts,
     });
 });
 

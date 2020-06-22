@@ -5,4 +5,6 @@ head
     link(rel='stylesheet' type='text/css' href='/stylesheets/style.css')
 body
     div= content
-script(src='scripts/index.js')
+
+for s in scripts
+    script(src= s)

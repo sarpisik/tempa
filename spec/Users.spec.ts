@@ -2,11 +2,11 @@ import supertest from 'supertest';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
 
-import app from 'server/Server';
-import UserDao from 'server/daos/User/UserDao.mock';
-import User, { IUser } from 'server/entities/User';
-import { pErr } from 'server/shared/functions';
-import { paramMissingError } from 'server/shared/constants';
+import app from '@server';
+import UserDao from '@daos/User/UserDao.mock';
+import User, { IUser } from '@entities/User';
+import { pErr } from '@shared/functions';
+import { paramMissingError } from '@shared/constants';
 
 describe('Users Routes', () => {
     const usersPath = '/api/users';

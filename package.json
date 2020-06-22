@@ -4,6 +4,7 @@
     "scripts": {
         "build": "npm run build:client && node build.js",
         "build:client": "NODE_ENV=production webpack --config ./src/client/webpack.config.js",
+        "build:manual": "tsc --build tsconfig.prod.json",
         "lint": "eslint --fix",
         "start": "node -r module-alias/register ./dist --env=production",
         "dev": "nodemon",
