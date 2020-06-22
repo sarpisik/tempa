@@ -1,7 +1,6 @@
 {
     "compilerOptions": {
-        "rootDir": "ts",
-        "outDir": "dist",
+        "rootDir": "pages",
         "target": "es2019",
         "lib": ["es2019", "dom"],
         "module": "commonjs",
