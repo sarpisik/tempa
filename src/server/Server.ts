@@ -9,7 +9,7 @@ import 'express-async-errors';
 
 import BaseRouter from './routes';
 import logger from '@shared/Logger';
-import { manifestParser, scriptGenerator } from './lib/assets_loader';
+import { manifestParser, scriptGenerator } from '@lib/assets_loader';
 
 // Init express
 const app = express();

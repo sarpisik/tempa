@@ -15,6 +15,7 @@
         "paths": {
             "@daos/*": ["src/server/daos/*"],
             "@entities/*": ["src/server/entities/*"],
+            "@lib/*": ["src/server/lib/*"],
             "@shared/*": ["src/server/shared/*"],
             "@server": ["src/server/Server"]
         },
