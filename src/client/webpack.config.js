@@ -1,15 +1,18 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 
-module.exports = {
+const isProd = process.env.NODE_ENV === 'production';
+
+const config = {
     mode: 'development',
     devtool: 'inline-source-map',
     entry: {
-        main: './ts/src/main.ts',
+        home: path.resolve(__dirname, 'pages/home.ts'),
     },
     output: {
-        path: path.resolve(__dirname, 'build'),
-        filename: '[name]-bundle.js',
+        path: path.resolve(__dirname, '..', 'server', 'public', 'scripts'),
+        filename: '[name].bundle.js',
     },
     resolve: {
         // Add ".ts" and ".tsx" as resolvable extensions.
@@ -18,14 +21,32 @@ module.exports = {
     module: {
         rules: [
             // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
-            { test: /\.tsx?$/, loader: 'ts-loader' },
+            { test: /\.tsx?$/, loader: 'ts-loader', exclude: /node_modules/ },
         ],
     },
-    plugins: [
-        new CopyWebpackPlugin([
-            {
-                from: './html',
-            },
-        ]),
-    ],
+    plugins: [new CleanWebpackPlugin()],
 };
+
+if (isProd) {
+    config.mode = 'production';
+    config.output.filename = '[name].[chunkhash].bundle.js';
+    config.plugins.push(new ManifestPlugin());
+    // config.optimization = {
+    //     minimizer: [
+    //         new UglifyJsPlugin({
+    //             parallel: true,
+    //         }),
+    //     ],
+    //     splitChunks: {
+    //         cacheGroups: {
+    //             vendor: {
+    //                 test: /node_modules/,
+    //                 name: 'vendor',
+    //                 chunks: 'all',
+    //             },
+    //         },
+    //     },
+    // };
+}
+
+module.exports = config;
