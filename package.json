@@ -12,13 +12,14 @@
     },
     "nodemonConfig": {
         "watch": [
-            "src"
+            "src/server"
         ],
-        "ext": "ts, html",
+        "ext": "ts, pug",
         "ignore": [
-            "src/public"
+            "src/public",
+            "src/client"
         ],
-        "exec": "ts-node -r tsconfig-paths/register ./src"
+        "exec": "ts-node -r tsconfig-paths/register ./src/server"
     },
     "_moduleAliases": {
         "@daos": "dist/daos",
