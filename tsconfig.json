@@ -13,14 +13,14 @@
         "target": "es6",
         "moduleResolution": "node",
         "paths": {
-            "@daos/*": ["src/daos/*"],
-            "@entities/*": ["src/entities/*"],
-            "@shared/*": ["src/shared/*"],
-            "@server": ["src/Server"]
+            "@daos/*": ["src/server/daos/*"],
+            "@entities/*": ["src/server/entities/*"],
+            "@shared/*": ["src/server/shared/*"],
+            "@server": ["src/server/Server"]
         },
         "types": ["node"],
         "typeRoots": ["node_modules/@types"]
     },
-    "include": ["src/**/*.ts", "spec/**/*.ts"],
-    "exclude": ["src/public/"]
+    "include": ["src/server/**/*.ts", "spec/**/*.ts"],
+    "exclude": ["src/server/public"]
 }
