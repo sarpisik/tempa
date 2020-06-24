@@ -22,6 +22,7 @@ const config = {
         filename: isProd
             ? 'scripts/[name].[chunkhash].bundle.js'
             : 'scripts/[name].bundle.js',
+        publicPath: '/public/',
     },
     resolve: {
         // Add ".ts" and ".tsx" as resolvable extensions.
@@ -61,6 +62,7 @@ const config = {
                     : '[id].css',
             }),
         isProd && new ManifestPlugin(),
+        !isProd && new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
         }),
