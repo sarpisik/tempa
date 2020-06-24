@@ -86,7 +86,7 @@ app.get('/', (req: Request, res: Response) => {
         );
     } else {
         stylesheets = ['home.css'].map(srcGenerator);
-        scripts = ['scripts/home.js', 'scripts/vendor.js'].map(srcGenerator);
+        scripts = ['home.js', 'vendor.js'].map(srcGenerator);
     }
 
     res.render('pages/home', {

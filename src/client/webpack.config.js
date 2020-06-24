@@ -21,7 +21,7 @@ const config = {
         path: path.resolve(__dirname, '..', 'server', 'public'),
         filename: isProd
             ? 'scripts/[name].[chunkhash].bundle.js'
-            : 'scripts/[name].js',
+            : '[name].js',
         publicPath: '',
     },
     resolve: {
