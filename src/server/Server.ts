@@ -51,13 +51,24 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('*', (req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
     const manifest = manifestParser();
     const stylesheets = [manifest['home.css']].map(srcGenerator);
     const scripts = [manifest['home.js']].map(srcGenerator);
     res.render('index', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'Hello World!',
+        stylesheets,
+        scripts,
+    });
+});
+app.get('/about', (req: Request, res: Response) => {
+    const manifest = manifestParser();
+    const stylesheets = [manifest['about.css']].map(srcGenerator);
+    const scripts = [manifest['about.js']].map(srcGenerator);
+    res.render('index', {
+        title: 'TYPESCRIPT-EXPRESS-MPS',
+        content: 'About page',
         stylesheets,
         scripts,
     });

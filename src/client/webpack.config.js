@@ -10,6 +10,7 @@ const config = {
     devtool: 'inline-source-map',
     entry: {
         home: path.resolve(__dirname, 'pages/home.ts'),
+        about: path.resolve(__dirname, 'pages/about.ts'),
     },
     output: {
         path: path.resolve(__dirname, '..', 'server', 'public'),
