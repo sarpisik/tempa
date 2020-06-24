@@ -62,6 +62,11 @@ typings/
 # build files
 dist/
 
+# client bundles
+src/server/public/scripts
+src/server/public/stylesheets
+src/server/public/manifest.json
+
 # Mac files
 .DS_Store
 
