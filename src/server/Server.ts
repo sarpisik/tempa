@@ -55,7 +55,7 @@ app.get('/', (req: Request, res: Response) => {
     const manifest = manifestParser();
     const stylesheets = [manifest['home.css']].map(srcGenerator);
     const scripts = [manifest['home.js']].map(srcGenerator);
-    res.render('index', {
+    res.render('pages/home', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'Hello World!',
         stylesheets,
@@ -66,7 +66,7 @@ app.get('/about', (req: Request, res: Response) => {
     const manifest = manifestParser();
     const stylesheets = [manifest['about.css']].map(srcGenerator);
     const scripts = [manifest['about.js']].map(srcGenerator);
-    res.render('index', {
+    res.render('pages/about', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'About page',
         stylesheets,
