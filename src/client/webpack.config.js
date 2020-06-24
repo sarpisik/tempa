@@ -1,7 +1,9 @@
 const path = require('path');
+const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -14,7 +16,9 @@ const config = {
     },
     output: {
         path: path.resolve(__dirname, '..', 'server', 'public'),
-        filename: 'scripts/[name].bundle.js',
+        filename: isProd
+            ? 'scripts/[name].[chunkhash].bundle.js'
+            : 'scripts/[name].bundle.js',
     },
     resolve: {
         // Add ".ts" and ".tsx" as resolvable extensions.
@@ -42,35 +46,45 @@ const config = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new MiniCssExtractPlugin({
-            // Options similar to the same options in webpackOptions.output
-            // both options are optional
-            filename: isProd ? 'stylesheets/[name].[hash].css' : '[name].css',
-            chunkFilename: isProd ? 'stylesheets/[id].[hash].css' : '[id].css',
+        isProd &&
+            new MiniCssExtractPlugin({
+                // Options similar to the same options in webpackOptions.output
+                // both options are optional
+                filename: isProd
+                    ? 'stylesheets/[name].[hash].css'
+                    : '[name].css',
+                chunkFilename: isProd
+                    ? 'stylesheets/[id].[hash].css'
+                    : '[id].css',
+            }),
+        isProd && new ManifestPlugin(),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            Popper: ['popper.js', 'default'],
         }),
-    ],
+    ].filter(Boolean),
 };
 
 if (isProd) {
     config.mode = 'production';
-    config.output.filename = 'scripts/[name].[chunkhash].bundle.js';
-    config.plugins.push(new ManifestPlugin());
-    // config.optimization = {
-    //     minimizer: [
-    //         new UglifyJsPlugin({
-    //             parallel: true,
-    //         }),
-    //     ],
-    //     splitChunks: {
-    //         cacheGroups: {
-    //             vendor: {
-    //                 test: /node_modules/,
-    //                 name: 'vendor',
-    //                 chunks: 'all',
-    //             },
-    //         },
-    //     },
-    // };
+    config.optimization = {
+        minimizer: [
+            new UglifyJsPlugin({
+                parallel: true,
+            }),
+        ],
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /node_modules/,
+                    name: 'vendor',
+                    chunks: 'all',
+                },
+            },
+        },
+    };
 }
 
 module.exports = config;

@@ -54,7 +54,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req: Request, res: Response) => {
     const manifest = manifestParser();
     const stylesheets = [manifest['home.css']].map(srcGenerator);
-    const scripts = [manifest['home.js']].map(srcGenerator);
+    const scripts = [manifest['home.js'], manifest['vendor.js']].map(
+        srcGenerator
+    );
     res.render('pages/home', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'Hello World!',
