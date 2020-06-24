@@ -3,7 +3,9 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserWebpackPlugin = require('terser-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -70,10 +72,11 @@ const config = {
 if (isProd) {
     config.mode = 'production';
     config.optimization = {
+        minimize: isProd,
         minimizer: [
-            new UglifyJsPlugin({
-                parallel: true,
-            }),
+            new UglifyJsPlugin({ parallel: true }),
+            new TerserWebpackPlugin(),
+            new OptimizeCssAssetsPlugin()
         ],
         splitChunks: {
             cacheGroups: {
