@@ -1,7 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const manifest = require('../public/manifest.json');
-
 export function manifestParser(): { [key: string]: string } {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const manifest = require('../public/manifest.json');
     return manifest;
 }
 

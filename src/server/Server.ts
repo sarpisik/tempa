@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path from 'path';
@@ -11,8 +12,30 @@ import BaseRouter from './routes';
 import logger from '@shared/Logger';
 import { manifestParser, srcGenerator } from '@lib/assets_loader';
 
+const isDev = process.env.NODE_ENV === 'development';
+const isProd = process.env.NODE_ENV === 'production';
+
 // Init express
 const app = express();
+
+/************************************************************************************
+ *                              Set hot module reload in development
+ ***********************************************************************************/
+
+if (isDev) {
+    const webpack = require('webpack');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const config = require('../client/webpack.config');
+    const compiler = webpack(config);
+
+    app.use(webpackHotMiddleware(compiler));
+    app.use(
+        webpackDevMiddleware(compiler, {
+            publicPath: config.output.publicPath,
+        })
+    );
+}
 
 /************************************************************************************
  *                              Set basic express settings
@@ -23,12 +46,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Show routes called in console during development
-if (process.env.NODE_ENV === 'development') {
+if (isDev) {
     app.use(morgan('dev'));
 }
 
 // Security
-if (process.env.NODE_ENV === 'production') {
+if (isProd) {
     app.use(helmet());
 }
 
@@ -52,11 +75,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req: Request, res: Response) => {
-    const manifest = manifestParser();
-    const stylesheets = [manifest['home.css']].map(srcGenerator);
-    const scripts = [manifest['home.js'], manifest['vendor.js']].map(
-        srcGenerator
-    );
+    let stylesheets: string[];
+    let scripts: string[];
+    if (isProd) {
+        const manifest = manifestParser();
+
+        stylesheets = [manifest['home.css']].map(srcGenerator);
+        scripts = [manifest['home.js'], manifest['vendor.js']].map(
+            srcGenerator
+        );
+    } else {
+        stylesheets = ['home.css'].map(srcGenerator);
+        scripts = ['scripts/home.js', 'scripts/vendor.js'].map(srcGenerator);
+    }
+
     res.render('pages/home', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'Hello World!',
@@ -65,9 +97,20 @@ app.get('/', (req: Request, res: Response) => {
     });
 });
 app.get('/about', (req: Request, res: Response) => {
-    const manifest = manifestParser();
-    const stylesheets = [manifest['about.css']].map(srcGenerator);
-    const scripts = [manifest['about.js']].map(srcGenerator);
+    let stylesheets: string[];
+    let scripts: string[];
+    if (isProd) {
+        const manifest = manifestParser();
+
+        stylesheets = [manifest['about.css']].map(srcGenerator);
+        scripts = [manifest['about.js'], manifest['vendor.js']].map(
+            srcGenerator
+        );
+    } else {
+        stylesheets = ['about.css'].map(srcGenerator);
+        scripts = ['about.js', 'vendor.js'].map(srcGenerator);
+    }
+
     res.render('pages/about', {
         title: 'TYPESCRIPT-EXPRESS-MPS',
         content: 'About page',

@@ -21,8 +21,8 @@ const config = {
         path: path.resolve(__dirname, '..', 'server', 'public'),
         filename: isProd
             ? 'scripts/[name].[chunkhash].bundle.js'
-            : 'scripts/[name].bundle.js',
-        publicPath: '/public/',
+            : 'scripts/[name].js',
+        publicPath: '',
     },
     resolve: {
         // Add ".ts" and ".tsx" as resolvable extensions.
@@ -50,17 +50,12 @@ const config = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        isProd &&
-            new MiniCssExtractPlugin({
-                // Options similar to the same options in webpackOptions.output
-                // both options are optional
-                filename: isProd
-                    ? 'stylesheets/[name].[hash].css'
-                    : '[name].css',
-                chunkFilename: isProd
-                    ? 'stylesheets/[id].[hash].css'
-                    : '[id].css',
-            }),
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: isProd ? 'stylesheets/[name].[hash].css' : '[name].css',
+            chunkFilename: isProd ? 'stylesheets/[id].[hash].css' : '[id].css',
+        }),
         isProd && new ManifestPlugin(),
         !isProd && new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
