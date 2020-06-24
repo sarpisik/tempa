@@ -9,8 +9,8 @@ const config = {
     mode: 'development',
     devtool: 'inline-source-map',
     entry: {
-        home: path.resolve(__dirname, 'pages/home.ts'),
-        about: path.resolve(__dirname, 'pages/about.ts'),
+        home: path.resolve(__dirname, 'scripts/home.ts'),
+        about: path.resolve(__dirname, 'scripts/about.ts'),
     },
     output: {
         path: path.resolve(__dirname, '..', 'server', 'public'),

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "rootDir": "pages",
+        "rootDir": "scripts",
         "target": "es5",
         "lib": ["es2019", "dom"],
         "module": "commonjs",
