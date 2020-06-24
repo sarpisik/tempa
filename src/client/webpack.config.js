@@ -46,7 +46,7 @@ const config = {
             // Options similar to the same options in webpackOptions.output
             // both options are optional
             filename: isProd ? 'stylesheets/[name].[hash].css' : '[name].css',
-            chunkFilename: isProd ? '[id].[hash].css' : '[id].css',
+            chunkFilename: isProd ? 'stylesheets/[id].[hash].css' : '[id].css',
         }),
     ],
 };
