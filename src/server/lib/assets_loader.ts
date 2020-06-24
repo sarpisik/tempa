@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const manifest = require('../public/scripts/manifest.json');
+const manifest = require('../public/manifest.json');
 
-export function manifestParser(): string[] {
-    return [manifest['home.js']];
+export function manifestParser(): { [key: string]: string } {
+    return manifest;
 }
 
-export function scriptGenerator(src: string): string {
-    return `/scripts/${src}`;
+export function srcGenerator(src: string): string {
+    return `/${src}`;
 }

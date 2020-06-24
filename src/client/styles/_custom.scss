@@ -1,0 +1,12 @@
+$theme-colors: (
+    'primary': #740534,
+);
+
+// Required
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'node_modules/bootstrap/scss/mixins';
+@import 'node_modules/bootstrap/scss/bootstrap-reboot';
+
+// Optional
+@import 'node_modules/bootstrap/scss/buttons';

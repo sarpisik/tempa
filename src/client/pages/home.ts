@@ -1,3 +1,5 @@
+import '../styles/home.scss';
+
 class Message {
     print() {
         console.log('Hello world!');
