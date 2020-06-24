@@ -8,9 +8,10 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
+const mode = isProd ? 'production' : 'development';
 
 const config = {
-    mode: 'development',
+    mode,
     devtool: 'inline-source-map',
     entry: {
         home: path.resolve(__dirname, 'scripts/home.ts'),
@@ -60,6 +61,9 @@ const config = {
                     : '[id].css',
             }),
         isProd && new ManifestPlugin(),
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(mode),
+        }),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
@@ -70,13 +74,12 @@ const config = {
 };
 
 if (isProd) {
-    config.mode = 'production';
     config.optimization = {
         minimize: isProd,
         minimizer: [
             new UglifyJsPlugin({ parallel: true }),
             new TerserWebpackPlugin(),
-            new OptimizeCssAssetsPlugin()
+            new OptimizeCssAssetsPlugin(),
         ],
         splitChunks: {
             cacheGroups: {
