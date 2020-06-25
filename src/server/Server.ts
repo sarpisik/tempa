@@ -82,10 +82,8 @@ app.get('/', (req: Request, res: Response) => {
     if (isProd) {
         const manifest = manifestParser();
 
-        stylesheets = [manifest['home.css']].map(srcGenerator);
-        scripts = [manifest['home.js'], manifest['vendor.js']].map(
-            srcGenerator
-        );
+        stylesheets = [manifest['home.css']];
+        scripts = [manifest['home.js'], manifest['vendor.js']];
     } else {
         stylesheets = ['home.css'].map(srcGenerator);
         scripts = ['home.js', 'vendor.js'].map(srcGenerator);
@@ -104,10 +102,8 @@ app.get('/about', (req: Request, res: Response) => {
     if (isProd) {
         const manifest = manifestParser();
 
-        stylesheets = [manifest['about.css']].map(srcGenerator);
-        scripts = [manifest['about.js'], manifest['vendor.js']].map(
-            srcGenerator
-        );
+        stylesheets = [manifest['about.css']];
+        scripts = [manifest['about.js'], manifest['vendor.js']];
     } else {
         stylesheets = ['about.css'].map(srcGenerator);
         scripts = ['about.js', 'vendor.js'].map(srcGenerator);
