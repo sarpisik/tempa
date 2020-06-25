@@ -5,6 +5,7 @@ import path from 'path';
 import helmet from 'helmet';
 
 import express, { Request, Response, NextFunction } from 'express';
+import expressStaticGzip from 'express-static-gzip';
 import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
@@ -55,6 +56,10 @@ if (isDev) {
 // Security
 if (isProd) {
     app.use(helmet());
+    app.use(
+        '/',
+        expressStaticGzip(path.join(__dirname, 'public'), { index: false })
+    );
 }
 
 // Add APIs
