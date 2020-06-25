@@ -9,20 +9,9 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 const mode = isProd ? 'production' : 'development';
+const { generatePageReducer } = require('./config/page');
+console.log(generatePageReducer);
 const pageReducer = generatePageReducer(isProd);
-function generatePageReducer(isProd) {
-    return function pageReducer(pages, pageName) {
-        const hmrPath = pageName === 'home' ? '' : pageName;
-        const pagePath = path.resolve(__dirname, `scripts/${pageName}.ts`);
-        pages[pageName] = isProd
-            ? pagePath
-            : [
-                  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-                  pagePath,
-              ];
-        return pages;
-    };
-}
 
 const config = {
     mode,
