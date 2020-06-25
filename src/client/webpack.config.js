@@ -6,6 +6,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const { generateEntries } = require('./config/entry');
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -46,6 +47,7 @@ const config = {
             chunkFilename: isProd ? 'stylesheets/[id].[hash].css' : '[id].css',
         }),
         isProd && new ManifestPlugin(),
+        isProd && new CompressionPlugin(),
         !isProd && new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(mode),
