@@ -1,5 +1,6 @@
-/* CUSTOMIZE THE CAROUSEL
--------------------------------------------------- */
+@import './custom';
+@import 'node_modules/bootstrap/scss/carousel';
+@import 'node_modules/bootstrap/scss/images';
 
 /* Carousel base class */
 .carousel {
@@ -86,7 +87,3 @@
         margin-top: 7rem;
     }
 }
-
-@import './custom';
-@import 'node_modules/bootstrap/scss/carousel';
-@import 'node_modules/bootstrap/scss/images';
