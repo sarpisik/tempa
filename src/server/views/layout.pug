@@ -11,17 +11,17 @@ html(lang= locale)
     body
         header
             nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
-                a.navbar-brand(href='#') Carousel
+                a.navbar-brand(href='/') Carousel
                 button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarCollapse' aria-controls='navbarCollapse' aria-expanded='false' aria-label='Toggle navigation')
                     span.navbar-toggler-icon
                 #navbarCollapse.collapse.navbar-collapse
                     ul.navbar-nav.mr-auto
                         li.nav-item.active
-                            a.nav-link(href='#')
+                            a.nav-link(href='/')
                                 | Home 
                                 span.sr-only (current)
                         li.nav-item
-                            a.nav-link(href='#') Link
+                            a.nav-link(href='/about') About
                         li.nav-item
                             a.nav-link.disabled(href='#' tabindex='-1' aria-disabled='true') Disabled
                     form.form-inline.mt-2.mt-md-0
