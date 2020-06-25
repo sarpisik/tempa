@@ -6,11 +6,10 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const { generateEntries } = require('./config/entry');
 
 const isProd = process.env.NODE_ENV === 'production';
 const mode = isProd ? 'production' : 'development';
-const { generateEntries } = require('./config/entry');
-console.log(generateEntries);
 
 const config = {
     mode,
@@ -21,10 +20,7 @@ const config = {
         filename: isProd ? 'scripts/[name].[chunkhash].bundle.js' : '[name].js',
         publicPath: '/',
     },
-    resolve: {
-        // Add ".ts" and ".tsx" as resolvable extensions.
-        extensions: ['.ts', '.tsx', '.js'],
-    },
+    resolve: { extensions: ['.ts', '.tsx', '.js'] },
     module: {
         rules: [
             {
@@ -32,9 +28,7 @@ const config = {
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            hmr: !isProd,
-                        },
+                        options: { hmr: !isProd },
                     },
                     'css-loader',
                     'postcss-loader',
