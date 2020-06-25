@@ -9,9 +9,8 @@ import expressStaticGzip from 'express-static-gzip';
 import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
-import BaseRouter from './routes';
+import routes from './routes';
 import logger from '@shared/Logger';
-import { manifestParser, srcGenerator } from '@lib/assets_loader';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -62,8 +61,11 @@ if (isProd) {
     );
 }
 
+// Pass environment state to handlers
+app.locals.production = isProd;
+
 // Add APIs
-app.use('/api', BaseRouter);
+// app.use('/api', BaseRouter);
 
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,46 +83,7 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('/', (req: Request, res: Response) => {
-    let stylesheets: string[];
-    let scripts: string[];
-    if (isProd) {
-        const manifest = manifestParser();
-
-        stylesheets = [manifest['home.css']];
-        scripts = [manifest['home.js'], manifest['vendor.js']];
-    } else {
-        stylesheets = ['home.css'].map(srcGenerator);
-        scripts = ['home.js', 'vendor.js'].map(srcGenerator);
-    }
-
-    res.render('pages/home', {
-        title: 'TYPESCRIPT-EXPRESS-MPS',
-        content: 'Hello World!',
-        stylesheets,
-        scripts,
-    });
-});
-app.get('/about', (req: Request, res: Response) => {
-    let stylesheets: string[];
-    let scripts: string[];
-    if (isProd) {
-        const manifest = manifestParser();
-
-        stylesheets = [manifest['about.css']];
-        scripts = [manifest['about.js'], manifest['vendor.js']];
-    } else {
-        stylesheets = ['about.css'].map(srcGenerator);
-        scripts = ['about.js', 'vendor.js'].map(srcGenerator);
-    }
-
-    res.render('pages/about', {
-        title: 'TYPESCRIPT-EXPRESS-MPS',
-        content: 'About page',
-        stylesheets,
-        scripts,
-    });
-});
+app.use('/', routes);
 
 // Export express instance
 export default app;
