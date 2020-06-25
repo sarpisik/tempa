@@ -9,20 +9,29 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 const mode = isProd ? 'production' : 'development';
+const pageReducer = generatePageReducer(isProd);
+function generatePageReducer(isProd) {
+    return function pageReducer(pages, pageName) {
+        const hmrPath = pageName === 'home' ? '' : pageName;
+        const pagePath = path.resolve(__dirname, `scripts/${pageName}.ts`);
+        pages[pageName] = isProd
+            ? pagePath
+            : [
+                  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+                  pagePath,
+              ];
+        return pages;
+    };
+}
 
 const config = {
     mode,
     devtool: 'inline-source-map',
-    entry: {
-        home: path.resolve(__dirname, 'scripts/home.ts'),
-        about: path.resolve(__dirname, 'scripts/about.ts'),
-    },
+    entry: ['home', 'about'].reduce(pageReducer, {}),
     output: {
         path: path.resolve(__dirname, '..', 'server', 'public'),
-        filename: isProd
-            ? 'scripts/[name].[chunkhash].bundle.js'
-            : '[name].js',
-        publicPath: '',
+        filename: isProd ? 'scripts/[name].[chunkhash].bundle.js' : '[name].js',
+        publicPath: '/',
     },
     resolve: {
         // Add ".ts" and ".tsx" as resolvable extensions.

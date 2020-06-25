@@ -29,12 +29,14 @@ if (isDev) {
     const config = require('../client/webpack.config');
     const compiler = webpack(config);
 
-    app.use(webpackHotMiddleware(compiler));
     app.use(
         webpackDevMiddleware(compiler, {
+            noInfo: true,
             publicPath: config.output.publicPath,
+            stats: false,
         })
     );
+    app.use(webpackHotMiddleware(compiler));
 }
 
 /************************************************************************************
