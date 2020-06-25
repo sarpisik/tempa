@@ -9,14 +9,13 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 const mode = isProd ? 'production' : 'development';
-const { generatePageReducer } = require('./config/page');
-console.log(generatePageReducer);
-const pageReducer = generatePageReducer(isProd);
+const { generateEntries } = require('./config/entry');
+console.log(generateEntries);
 
 const config = {
     mode,
     devtool: 'inline-source-map',
-    entry: ['home', 'about'].reduce(pageReducer, {}),
+    entry: generateEntries(isProd),
     output: {
         path: path.resolve(__dirname, '..', 'server', 'public'),
         filename: isProd ? 'scripts/[name].[chunkhash].bundle.js' : '[name].js',
@@ -49,8 +48,6 @@ const config = {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            // Options similar to the same options in webpackOptions.output
-            // both options are optional
             filename: isProd ? 'stylesheets/[name].[hash].css' : '[name].css',
             chunkFilename: isProd ? 'stylesheets/[id].[hash].css' : '[id].css',
         }),
@@ -66,26 +63,25 @@ const config = {
             Popper: ['popper.js', 'default'],
         }),
     ].filter(Boolean),
+    optimization: isProd
+        ? {
+              minimize: true,
+              minimizer: [
+                  new UglifyJsPlugin({ parallel: true }),
+                  new TerserWebpackPlugin(),
+                  new OptimizeCssAssetsPlugin(),
+              ],
+              splitChunks: {
+                  cacheGroups: {
+                      vendor: {
+                          test: /node_modules/,
+                          name: 'vendor',
+                          chunks: 'all',
+                      },
+                  },
+              },
+          }
+        : {},
 };
-
-if (isProd) {
-    config.optimization = {
-        minimize: isProd,
-        minimizer: [
-            new UglifyJsPlugin({ parallel: true }),
-            new TerserWebpackPlugin(),
-            new OptimizeCssAssetsPlugin(),
-        ],
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /node_modules/,
-                    name: 'vendor',
-                    chunks: 'all',
-                },
-            },
-        },
-    };
-}
 
 module.exports = config;
