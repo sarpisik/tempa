@@ -22,7 +22,7 @@ export default class HomePageController extends PageController {
         this.router.get(this.path, this._renderPage);
     };
 
-    private _renderPage = withCatch(async (req: Request, res: Response) => {
+    private _renderPage = withCatch(async (_req: Request, res: Response) => {
         const locals = this._generateLocals(TITLE);
 
         res.render('pages/home', locals);
