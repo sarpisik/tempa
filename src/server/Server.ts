@@ -9,7 +9,7 @@ import expressStaticGzip from 'express-static-gzip';
 import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
-import routes from './routes';
+import controllers from './controllers';
 import logger from '@shared/Logger';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -19,10 +19,11 @@ const isProd = process.env.NODE_ENV === 'production';
 const app = express();
 
 /************************************************************************************
- *                              Set hot module reload in development
+ *                              Set development settings
  ***********************************************************************************/
 
 if (isDev) {
+    // hot module reload
     const webpack = require('webpack');
     const webpackHotMiddleware = require('webpack-hot-middleware');
     const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -37,6 +38,9 @@ if (isDev) {
         })
     );
     app.use(webpackHotMiddleware(compiler));
+
+    // Show routes called in console
+    app.use(morgan('dev'));
 }
 
 /************************************************************************************
@@ -47,25 +51,39 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Show routes called in console during development
-if (isDev) {
-    app.use(morgan('dev'));
-}
+// Pass environment state to handlers
+app.locals.production = isProd;
 
-// Security
+/************************************************************************************
+ *                              Set production settings
+ ***********************************************************************************/
+
 if (isProd) {
+    // Security
     app.use(helmet());
+
+    // Serve zipped static files
     app.use(
         '/',
         expressStaticGzip(path.join(__dirname, 'public'), { index: false })
     );
 }
 
-// Pass environment state to handlers
-app.locals.production = isProd;
+/************************************************************************************
+ *                              Serve front-end content
+ ***********************************************************************************/
 
-// Add APIs
-// app.use('/api', BaseRouter);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+app.use(express.static(path.join(__dirname, 'public')));
+
+/************************************************************************************
+ *                              Serve controllers
+ ***********************************************************************************/
+
+controllers.forEach((controller) => {
+    app.use('/', controller.router);
+});
 
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,15 +93,6 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
         error: err.message,
     });
 });
-
-/************************************************************************************
- *                              Serve front-end content
- ***********************************************************************************/
-
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', routes);
 
 // Export express instance
 export default app;
