@@ -1,12 +1,18 @@
 import { Request, Response, Router } from 'express';
-import { manifestParser, srcGenerator } from '@lib/assets_loader';
+import PageController from '@lib/page_controller';
 import { withCatch } from '@shared/hofs';
 
-export default class HomePageController {
+const TITLE = 'TYPESCRIPT-EXPRESS-MPS | Home';
+const STYLESHEETS = ['home.css'];
+const SCRIPTS = ['home.js', 'vendor.js'];
+
+export default class HomePageController extends PageController {
     path: string;
     router: Router;
 
     constructor(router: typeof Router) {
+        super(STYLESHEETS, SCRIPTS);
+
         this.path = '/';
         this.router = router();
         this._initializeRoutes();
@@ -17,22 +23,8 @@ export default class HomePageController {
     };
 
     private _renderPage = withCatch(async (req: Request, res: Response) => {
-        let stylesheets: string[];
-        let scripts: string[];
-        if (req.app.locals.production) {
-            const manifest = manifestParser();
+        const locals = this._generateLocals(TITLE);
 
-            stylesheets = [manifest['home.css']];
-            scripts = [manifest['home.js'], manifest['vendor.js']];
-        } else {
-            stylesheets = ['home.css'].map(srcGenerator);
-            scripts = ['home.js', 'vendor.js'].map(srcGenerator);
-        }
-
-        res.render('pages/home', {
-            title: 'TYPESCRIPT-EXPRESS-MPS | Home',
-            stylesheets,
-            scripts,
-        });
+        res.render('pages/home', locals);
     });
 }
