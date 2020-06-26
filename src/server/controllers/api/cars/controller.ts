@@ -1,15 +1,14 @@
-import { Request, Response, Router } from 'express';
+import { Request, Response } from 'express';
+import Controller, { RouterType } from '@lib/controller';
 import { withCatch } from '@shared/hofs';
 import CarService from './service';
 
-export default class CarController {
-    path: string;
-    router: Router;
+export default class CarController extends Controller {
     private _service: CarService;
 
-    constructor(router: typeof Router, carService: typeof CarService) {
-        this.path = '/cars';
-        this.router = router();
+    constructor(router: RouterType, carService: typeof CarService) {
+        super(router, '/cars');
+
         this._service = new carService();
         this._initializeRoutes();
     }
