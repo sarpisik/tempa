@@ -8,10 +8,11 @@ import User, { IUser } from '@entities/User';
 import { pErr, readCars } from '@shared/functions';
 import { paramMissingError } from '@shared/constants';
 import CarService from 'src/server/controllers/api/cars/service';
+import { Car } from 'src/server/controllers/api/cars/model';
 
 describe('Cars Routes', () => {
     const carsPath = '/api/cars';
-    const addcarsPath = `${carsPath}/add`;
+    const addcarsPath = `${carsPath}/`;
     const updateUserPath = `${carsPath}/update`;
     const deleteUserPath = `${carsPath}/delete/:id`;
 
@@ -50,60 +51,64 @@ describe('Cars Routes', () => {
         });
     });
 
-    // describe(`"POST:${addUsersPath}"`, () => {
-    //     const callApi = (reqBody: Record<string, unknown>) => {
-    //         return agent.post(addUsersPath).type('form').send(reqBody);
-    //     };
+    describe(`"POST:${addcarsPath}"`, () => {
+        // const callApi = (reqBody: Record<string, unknown>) => {
+        //     return agent.post(addcarsPath).type('form').send(reqBody);
+        // };
 
-    //     const userData = {
-    //         user: new User('Gordan Freeman', 'gordan.freeman@gmail.com'),
-    //     };
+        const carData = {
+            car: {
+                car_model: 'Scirocco',
+                car_make: 'Volkswagen',
+                car_model_year: 1988,
+            },
+        };
 
-    //     it(`should return a status code of "${CREATED}" if the request was successful.`, (done) => {
-    //         spyOn(UserDao.prototype, 'add').and.returnValue(Promise.resolve());
+        it(`should return a status code of "${CREATED}" if the request was successful.`, (done) => {
+            spyOn(UserDao.prototype, 'add').and.returnValue(Promise.resolve());
 
-    //         agent
-    //             .post(addUsersPath)
-    //             .type('form')
-    //             .send(userData) // pick up here
-    //             .end((err: Error, res: Response) => {
-    //                 pErr(err);
-    //                 expect(res.status).toBe(CREATED);
-    //                 expect(res.body.error).toBeUndefined();
-    //                 done();
-    //             });
-    //     });
+            agent
+                .post(addcarsPath)
+                .type('form')
+                .send(carData) // pick up here
+                .end((err: Error, res: Response) => {
+                    pErr(err);
+                    expect(res.status).toBe(CREATED);
+                    expect(res.body.error).toBeUndefined();
+                    done();
+                });
+        });
 
-    //     it(`should return a JSON Record<string, unknown> with an error message of "${paramMissingError}" and a status
-    //         code of "${BAD_REQUEST}" if the user param was missing.`, (done) => {
-    //         callApi({}).end((err: Error, res: Response) => {
-    //             pErr(err);
-    //             expect(res.status).toBe(BAD_REQUEST);
-    //             expect(res.body.error).toBe(paramMissingError);
-    //             done();
-    //         });
-    //     });
+        // it(`should return a JSON Record<string, unknown> with an error message of "${paramMissingError}" and a status
+        //     code of "${BAD_REQUEST}" if the user param was missing.`, (done) => {
+        //     callApi({}).end((err: Error, res: Response) => {
+        //         pErr(err);
+        //         expect(res.status).toBe(BAD_REQUEST);
+        //         expect(res.body.error).toBe(paramMissingError);
+        //         done();
+        //     });
+        // });
 
-    //     it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
-    //         if the request was unsuccessful.`, (done) => {
-    //         const errMsg = 'Could not add user.';
-    //         spyOn(UserDao.prototype, 'add').and.throwError(errMsg);
+        // it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
+        //     if the request was unsuccessful.`, (done) => {
+        //     const errMsg = 'Could not add user.';
+        //     spyOn(UserDao.prototype, 'add').and.throwError(errMsg);
 
-    //         callApi(userData).end((err: Error, res: Response) => {
-    //             pErr(err);
-    //             expect(res.status).toBe(BAD_REQUEST);
-    //             expect(res.body.error).toBe(errMsg);
-    //             done();
-    //         });
-    //     });
-    // });
+        //     callApi(carData).end((err: Error, res: Response) => {
+        //         pErr(err);
+        //         expect(res.status).toBe(BAD_REQUEST);
+        //         expect(res.body.error).toBe(errMsg);
+        //         done();
+        //     });
+        // });
+    });
 
     // describe(`"PUT:${updateUserPath}"`, () => {
     //     const callApi = (reqBody: Record<string, unknown>) => {
     //         return agent.put(updateUserPath).type('form').send(reqBody);
     //     };
 
-    //     const userData = {
+    //     const carData = {
     //         user: new User('Gordan Freeman', 'gordan.freeman@gmail.com'),
     //     };
 
@@ -112,7 +117,7 @@ describe('Cars Routes', () => {
     //             Promise.resolve()
     //         );
 
-    //         callApi(userData).end((err: Error, res: Response) => {
+    //         callApi(carData).end((err: Error, res: Response) => {
     //             pErr(err);
     //             expect(res.status).toBe(OK);
     //             expect(res.body.error).toBeUndefined();
@@ -135,7 +140,7 @@ describe('Cars Routes', () => {
     //         const updateErrMsg = 'Could not update user.';
     //         spyOn(UserDao.prototype, 'update').and.throwError(updateErrMsg);
 
-    //         callApi(userData).end((err: Error, res: Response) => {
+    //         callApi(carData).end((err: Error, res: Response) => {
     //             pErr(err);
     //             expect(res.status).toBe(BAD_REQUEST);
     //             expect(res.body.error).toBe(updateErrMsg);
