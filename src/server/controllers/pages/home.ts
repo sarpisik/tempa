@@ -18,7 +18,7 @@ export default class HomePageController extends PageController {
                 path: '/',
                 scripts: ['home.js', 'vendor.js'],
                 stylesheets: ['home.css'],
-                title: 'TYPESCRIPT-EXPRESS-MPS | Home',
+                title: 'TYPESCRIPT-EXPRESS-MPA | Home',
             },
             renderPage
         );

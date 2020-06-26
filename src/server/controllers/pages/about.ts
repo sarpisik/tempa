@@ -18,7 +18,7 @@ export default class AboutPageController extends PageController {
                 path: '/about',
                 scripts: ['about.js'],
                 stylesheets: ['about.css'],
-                title: 'TYPESCRIPT-EXPRESS-MPS | About',
+                title: 'TYPESCRIPT-EXPRESS-MPA | About',
             },
             renderPage
         );
