@@ -11,6 +11,7 @@ import 'express-async-errors';
 
 import controllers from './controllers';
 import logger from '@shared/Logger';
+import { CustomError } from '@shared/error';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -87,12 +88,14 @@ controllers.forEach((controller) => {
 
 // Print API errors
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
-    logger.error(err.message, err);
-    return res.status(BAD_REQUEST).json({
-        error: err.message,
-    });
-});
+app.use(
+    (err: CustomError, req: Request, res: Response, _next: NextFunction) => {
+        logger.error(err.message, err);
+        return res.status(err.statusCode || BAD_REQUEST).json({
+            error: err.message,
+        });
+    }
+);
 
 // Export express instance
 export default app;
