@@ -57,15 +57,13 @@ describe('Cars Routes', () => {
         // };
 
         const carData = {
-            car: {
-                car_model: 'Scirocco',
-                car_make: 'Volkswagen',
-                car_model_year: 1988,
-            },
+            car_model: 'Scirocco',
+            car_make: 'Volkswagen',
+            car_model_year: 1988,
         };
 
         it(`should return a status code of "${CREATED}" if the request was successful.`, (done) => {
-            spyOn(UserDao.prototype, 'add').and.returnValue(Promise.resolve());
+            const keys = Object.keys(carData) as Array<keyof typeof carData>;
 
             agent
                 .post(addcarsPath)
@@ -74,6 +72,9 @@ describe('Cars Routes', () => {
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(CREATED);
+                    keys.forEach((key) => {
+                        expect(carData[key]).toBe(res.body.car[key]);
+                    });
                     expect(res.body.error).toBeUndefined();
                     done();
                 });
