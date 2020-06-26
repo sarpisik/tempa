@@ -1,10 +1,34 @@
+import { NextFunction, Request, Response } from 'express';
 import { environment } from '@shared/constants';
+import Controller from './controller';
+import { withCatch } from '@shared/hofs';
 
-export default class PageController {
+export interface Locals {
+    path: string;
+    title: string;
+    stylesheets: string[];
+    scripts: string[];
+}
+export type Router = ConstructorParameters<typeof Controller>[0];
+export type RenderPage = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => Promise<unknown>;
+
+export default class PageController extends Controller {
+    protected _title: string;
     protected _stylesheets: string[];
     protected _scripts: string[];
+    private _renderPage: RenderPage;
 
-    constructor(stylesheets: string[], scripts: string[]) {
+    constructor(
+        router: Router,
+        { path, scripts, stylesheets, title }: Locals,
+        renderPage: RenderPage
+    ) {
+        super(router, path);
+
         if (environment === 'production') {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const { manifestParser } = require('./assets_loader');
@@ -17,12 +41,20 @@ export default class PageController {
             this._stylesheets = stylesheets;
             this._scripts = scripts;
         }
+        this._title = title;
+        this._renderPage = renderPage.bind(this);
+        this._initializeRoutes();
     }
 
-    protected _generateLocals = (title: string) => {
+    protected _generateLocals = () => {
         const stylesheets = this._stylesheets;
         const scripts = this._scripts;
+        const title = this._title;
 
         return { stylesheets, scripts, title };
+    };
+
+    private _initializeRoutes = () => {
+        this.router.get(this.path, withCatch(this._renderPage));
     };
 }
