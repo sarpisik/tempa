@@ -3,12 +3,9 @@ import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
 
 import app from '@server';
-import UserDao from '@daos/User/UserDao.mock';
-import User, { IUser } from '@entities/User';
 import { pErr, readCars } from '@shared/functions';
 import { paramMissingError } from '@shared/constants';
 import CarService from 'src/server/controllers/api/cars/service';
-import { Car } from 'src/server/controllers/api/cars/model';
 
 describe('Cars Routes', () => {
     const carsPath = '/api/cars';
@@ -94,18 +91,18 @@ describe('Cars Routes', () => {
             });
         });
 
-        // it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
-        //     if the request was unsuccessful.`, (done) => {
-        //     const errMsg = 'Could not add user.';
-        //     spyOn(UserDao.prototype, 'add').and.throwError(errMsg);
+        it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
+            if the request was unsuccessful.`, (done) => {
+            const errMsg = 'Could not add car.';
+            spyOn(CarService.prototype, 'createOne').and.throwError(errMsg);
 
-        //     callApi(carData).end((err: Error, res: Response) => {
-        //         pErr(err);
-        //         expect(res.status).toBe(BAD_REQUEST);
-        //         expect(res.body.error).toBe(errMsg);
-        //         done();
-        //     });
-        // });
+            callApi(body).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(errMsg);
+                done();
+            });
+        });
     });
 
     // describe(`"PUT:${updateUserPath}"`, () => {
