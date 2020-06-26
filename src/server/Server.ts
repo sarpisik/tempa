@@ -87,8 +87,8 @@ controllers.forEach((controller) => {
 });
 
 // Print API errors
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (err: CustomError, req: Request, res: Response, _next: NextFunction) => {
         logger.error(err.message, err);
         return res.status(err.statusCode || BAD_REQUEST).json({
