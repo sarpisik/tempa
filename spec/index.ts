@@ -2,7 +2,7 @@ import find from 'find';
 import Jasmine from 'jasmine';
 import dotenv from 'dotenv';
 import commandLineArgs from 'command-line-args';
-import logger from 'server/shared/Logger';
+import logger from '@shared/Logger';
 
 // Setup command line options
 const options = commandLineArgs([

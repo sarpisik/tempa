@@ -7,7 +7,7 @@ export default class CarController extends Controller {
     private _service: CarService;
 
     constructor(router: RouterType, carService: typeof CarService) {
-        super(router, '/cars');
+        super(router, '/api/cars');
 
         this._service = new carService();
         this._initializeRoutes();
