@@ -21,7 +21,7 @@ export default class CarService {
         this._db.cars.push(car);
         return car;
     }
-    updateOne(_id: string | number, updateCar: Omit<ICar, 'id'>) {
+    async updateOne(_id: string | number, updateCar: Omit<ICar, 'id'>) {
         const id = strToNum(_id);
         const cars = this._db.cars;
         const car = cars.find((car) => car.id === id);
@@ -29,12 +29,14 @@ export default class CarService {
         if (!car) throw new BadRequestError();
 
         const keys = Object.keys(updateCar) as Array<keyof typeof updateCar>;
-        keys.forEach((key) => {
+
+        for await (const key of keys) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             car[key] = updateCar[key];
-        });
-        return Promise.resolve(car);
+        }
+
+        return car;
     }
 }
 

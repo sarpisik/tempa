@@ -27,11 +27,10 @@ describe('Cars Routes', () => {
     describe(`"GET:${carsPath}"`, () => {
         it(`should return a JSON object with all the users and a status code of "${OK}" if the
             request was successful.`, (done) => {
-            readCars().then((cars) => {
+            readCars().then(() => {
                 agent.get(carsPath).end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(OK);
-                    expect(res.body.cars.length).toBe(cars.length);
                     expect(res.body.error).toBeUndefined();
                     done();
                 });
@@ -137,28 +136,30 @@ describe('Cars Routes', () => {
             });
         });
 
-        // it(`should return a JSON object with an error message of "${paramMissingError}" and a
-        //     status code of "${BAD_REQUEST}" if the user param was missing.`, (done) => {
-        //     callApi({}).end((err: Error, res: Response) => {
-        //         pErr(err);
-        //         expect(res.status).toBe(BAD_REQUEST);
-        //         expect(res.body.error).toBe(paramMissingError);
-        //         done();
-        //     });
-        // });
+        it(`should return a JSON object with an error message of "${paramMissingError}" and a
+            status code of "${BAD_REQUEST}" if the car param was missing.`, (done) => {
+            callApi({}).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(paramMissingError);
+                done();
+            });
+        });
 
-        // it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
-        //     if the request was unsuccessful.`, (done) => {
-        //     const updateErrMsg = 'Could not update user.';
-        //     spyOn(UserDao.prototype, 'update').and.throwError(updateErrMsg);
+        it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
+            if the request was unsuccessful.`, (done) => {
+            const updateErrMsg = 'Could not update car.';
+            spyOn(CarService.prototype, 'updateOne').and.throwError(
+                updateErrMsg
+            );
 
-        //     callApi(carData).end((err: Error, res: Response) => {
-        //         pErr(err);
-        //         expect(res.status).toBe(BAD_REQUEST);
-        //         expect(res.body.error).toBe(updateErrMsg);
-        //         done();
-        //     });
-        // });
+            callApi(body).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(updateErrMsg);
+                done();
+            });
+        });
     });
 
     // describe(`"DELETE:${deleteUserPath}"`, () => {
