@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
+import { BAD_REQUEST, CREATED } from 'http-status-codes';
 import Controller, { RouterType } from '@lib/controller';
+import { paramMissingError } from '@shared/constants';
 import { withCatch } from '@shared/hofs';
 import CarService from './service';
-import { CREATED } from 'http-status-codes';
 
 export default class CarController extends Controller {
     private _service: CarService;
@@ -24,18 +25,19 @@ export default class CarController extends Controller {
         res.json({ cars });
     });
 
-    private _createCar = withCatch(
-        async (
-            { body: { car_model, car_make, car_model_year } }: Request,
-            res: Response
-        ) => {
-            const car = await this._service.createOne(
-                car_model,
-                car_make,
-                parseInt(car_model_year)
-            );
-
-            res.status(CREATED).json({ car });
+    private _createCar = withCatch(async ({ body }: Request, res: Response) => {
+        if (!body.car) {
+            return res.status(BAD_REQUEST).json({
+                error: paramMissingError,
+            });
         }
-    );
+        const { car_model, car_make, car_model_year } = body.car;
+        const car = await this._service.createOne(
+            car_model,
+            car_make,
+            car_model_year
+        );
+
+        res.status(CREATED).json({ car });
+    });
 }

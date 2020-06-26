@@ -9,9 +9,17 @@ export default class CarService {
     async createOne(
         car_model: string,
         car_make: string,
-        car_model_year: number
+        car_model_year: string | number
     ) {
-        const car = await new Car(car_model, car_make, car_model_year);
+        const car = await new Car(
+            car_model,
+            car_make,
+            strToNum(car_model_year)
+        );
         return car;
     }
+}
+
+function strToNum(data: string | number): number {
+    return typeof data === 'number' ? data : parseInt(data);
 }

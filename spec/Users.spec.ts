@@ -52,43 +52,47 @@ describe('Cars Routes', () => {
     });
 
     describe(`"POST:${addcarsPath}"`, () => {
-        // const callApi = (reqBody: Record<string, unknown>) => {
-        //     return agent.post(addcarsPath).type('form').send(reqBody);
-        // };
+        const callApi = (reqBody: Record<string, unknown>) => {
+            return agent.post(addcarsPath).type('form').send(reqBody);
+        };
 
-        const carData = {
-            car_model: 'Scirocco',
-            car_make: 'Volkswagen',
-            car_model_year: 1988,
+        const body = {
+            car: {
+                car_model: 'Scirocco',
+                car_make: 'Volkswagen',
+                car_model_year: 1988,
+            },
         };
 
         it(`should return a status code of "${CREATED}" if the request was successful.`, (done) => {
-            const keys = Object.keys(carData) as Array<keyof typeof carData>;
+            const keys = Object.keys(body.car) as Array<
+                keyof typeof body['car']
+            >;
 
             agent
                 .post(addcarsPath)
                 .type('form')
-                .send(carData) // pick up here
+                .send(body) // pick up here
                 .end((err: Error, res: Response) => {
                     pErr(err);
                     expect(res.status).toBe(CREATED);
                     keys.forEach((key) => {
-                        expect(carData[key]).toBe(res.body.car[key]);
+                        expect(body.car[key]).toBe(res.body.car[key]);
                     });
                     expect(res.body.error).toBeUndefined();
                     done();
                 });
         });
 
-        // it(`should return a JSON Record<string, unknown> with an error message of "${paramMissingError}" and a status
-        //     code of "${BAD_REQUEST}" if the user param was missing.`, (done) => {
-        //     callApi({}).end((err: Error, res: Response) => {
-        //         pErr(err);
-        //         expect(res.status).toBe(BAD_REQUEST);
-        //         expect(res.body.error).toBe(paramMissingError);
-        //         done();
-        //     });
-        // });
+        it(`should return a JSON Record<string, unknown> with an error message of "${paramMissingError}" and a status
+            code of "${BAD_REQUEST}" if the car param was missing.`, (done) => {
+            callApi({}).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(paramMissingError);
+                done();
+            });
+        });
 
         // it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
         //     if the request was unsuccessful.`, (done) => {
