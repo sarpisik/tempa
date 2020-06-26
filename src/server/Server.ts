@@ -12,90 +12,100 @@ import 'express-async-errors';
 import controllers from './controllers';
 import logger from '@shared/Logger';
 import { CustomError } from '@shared/error';
+import database from './database/database';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
-// Init express
-const app = express();
+export default async function server() {
+    // Connect database
+    const db = await database();
 
-/************************************************************************************
- *                              Set development settings
- ***********************************************************************************/
+    // Init express
+    const app = express();
 
-if (isDev) {
-    // hot module reload
-    const webpack = require('webpack');
-    const webpackHotMiddleware = require('webpack-hot-middleware');
-    const webpackDevMiddleware = require('webpack-dev-middleware');
-    const config = require('../client/webpack.config');
-    const compiler = webpack(config);
+    /************************************************************************************
+     *                              Set development settings
+     ***********************************************************************************/
 
-    app.use(
-        webpackDevMiddleware(compiler, {
-            noInfo: true,
-            publicPath: config.output.publicPath,
-            stats: false,
-        })
-    );
-    app.use(webpackHotMiddleware(compiler));
+    if (isDev) {
+        // hot module reload
+        const webpack = require('webpack');
+        const webpackHotMiddleware = require('webpack-hot-middleware');
+        const webpackDevMiddleware = require('webpack-dev-middleware');
+        const config = require('../client/webpack.config');
+        const compiler = webpack(config);
 
-    // Show routes called in console
-    app.use(morgan('dev'));
-}
+        app.use(
+            webpackDevMiddleware(compiler, {
+                noInfo: true,
+                publicPath: config.output.publicPath,
+                stats: false,
+            })
+        );
+        app.use(webpackHotMiddleware(compiler));
 
-/************************************************************************************
- *                              Set basic express settings
- ***********************************************************************************/
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-// Pass environment state to handlers
-app.locals.production = isProd;
-
-/************************************************************************************
- *                              Set production settings
- ***********************************************************************************/
-
-if (isProd) {
-    // Security
-    app.use(helmet());
-
-    // Serve zipped static files
-    app.use(
-        '/',
-        expressStaticGzip(path.join(__dirname, 'public'), { index: false })
-    );
-}
-
-/************************************************************************************
- *                              Serve front-end content
- ***********************************************************************************/
-
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-app.use(express.static(path.join(__dirname, 'public')));
-
-/************************************************************************************
- *                              Serve controllers
- ***********************************************************************************/
-
-controllers.forEach((controller) => {
-    app.use('/', controller.router);
-});
-
-// Print API errors
-app.use(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (err: CustomError, req: Request, res: Response, _next: NextFunction) => {
-        logger.error(err.message, err);
-        return res.status(err.statusCode || BAD_REQUEST).json({
-            error: err.message,
-        });
+        // Show routes called in console
+        app.use(morgan('dev'));
     }
-);
 
-// Export express instance
-export default app;
+    /************************************************************************************
+     *                              Set basic express settings
+     ***********************************************************************************/
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
+
+    // Pass environment state to handlers
+    app.locals.production = isProd;
+
+    /************************************************************************************
+     *                              Set production settings
+     ***********************************************************************************/
+
+    if (isProd) {
+        // Security
+        app.use(helmet());
+
+        // Serve zipped static files
+        app.use(
+            '/',
+            expressStaticGzip(path.join(__dirname, 'public'), { index: false })
+        );
+    }
+
+    /************************************************************************************
+     *                              Serve front-end content
+     ***********************************************************************************/
+
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'pug');
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    /************************************************************************************
+     *                              Serve controllers
+     ***********************************************************************************/
+
+    controllers(db).forEach((controller) => {
+        app.use('/', controller.router);
+    });
+
+    // Print API errors
+    app.use(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (
+            err: CustomError,
+            req: Request,
+            res: Response,
+            _next: NextFunction
+        ) => {
+            logger.error(err.message, err);
+            return res.status(err.statusCode || BAD_REQUEST).json({
+                error: err.message,
+            });
+        }
+    );
+
+    return app;
+}

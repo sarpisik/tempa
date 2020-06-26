@@ -1,8 +1,11 @@
-import { apiControllers } from './api';
+import generateApiControllers from './api';
 import { pageControllers } from './pages';
+import { Database } from '@shared/types';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const controllers = pageControllers.concat(apiControllers);
+export default function controllers(db: Database) {
+    const apiControllers = generateApiControllers(db);
 
-export default controllers;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return pageControllers.concat(apiControllers);
+}

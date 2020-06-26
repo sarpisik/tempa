@@ -1,10 +1,12 @@
-import { readCars } from '@shared/functions';
 import { ICar } from './interface';
 import { Car } from './model';
+import { BadRequestError } from '@shared/error';
 
 export default class CarService {
+    constructor(private _db: { cars: ICar[] }) {}
+
     findMany(): Promise<ICar[]> {
-        return readCars();
+        return Promise.resolve(this._db.cars);
     }
     async createOne(
         car_model: string,
@@ -16,7 +18,23 @@ export default class CarService {
             car_make,
             strToNum(car_model_year)
         );
+        this._db.cars.push(car);
         return car;
+    }
+    updateOne(_id: string | number, updateCar: Omit<ICar, 'id'>) {
+        const id = strToNum(_id);
+        const cars = this._db.cars;
+        const car = cars.find((car) => car.id === id);
+
+        if (!car) throw new BadRequestError();
+
+        const keys = Object.keys(updateCar) as Array<keyof typeof updateCar>;
+        keys.forEach((key) => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            car[key] = updateCar[key];
+        });
+        return Promise.resolve(car);
     }
 }
 
