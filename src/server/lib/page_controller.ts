@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { environment } from '@shared/constants';
-import Controller from './controller';
 import { withCatch } from '@shared/hofs';
+import Controller from './controller';
 
 export interface Locals {
     path: string;
