@@ -7,6 +7,7 @@ import UserDao from '@daos/User/UserDao.mock';
 import User, { IUser } from '@entities/User';
 import { pErr, readCars } from '@shared/functions';
 import { paramMissingError } from '@shared/constants';
+import CarService from 'src/server/controllers/api/cars/service';
 
 describe('Cars Routes', () => {
     const carsPath = '/api/cars';
@@ -35,18 +36,18 @@ describe('Cars Routes', () => {
             });
         });
 
-        // it(`should return a JSON object containing an error message and a status code of
-        //     "${BAD_REQUEST}" if the request was unsuccessful.`, (done) => {
-        //     const errMsg = 'Could not fetch users.';
-        //     spyOn(UserDao.prototype, 'getAll').and.throwError(errMsg);
+        it(`should return a JSON object containing an error message and a status code of
+            "${BAD_REQUEST}" if the request was unsuccessful.`, (done) => {
+            const errMsg = 'Could not fetch cars.';
+            spyOn(CarService.prototype, 'findMany').and.throwError(errMsg);
 
-        //     agent.get(getCarsPath).end((err: Error, res: Response) => {
-        //         pErr(err);
-        //         expect(res.status).toBe(BAD_REQUEST);
-        //         expect(res.body.error).toBe(errMsg);
-        //         done();
-        //     });
-        // });
+            agent.get(carsPath).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(errMsg);
+                done();
+            });
+        });
     });
 
     // describe(`"POST:${addUsersPath}"`, () => {
