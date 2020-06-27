@@ -12,7 +12,7 @@ import 'express-async-errors';
 import controllers from './controllers';
 import logger from '@shared/Logger';
 import { CustomError } from '@shared/error';
-import database from './database/database';
+import database from './db/database';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
