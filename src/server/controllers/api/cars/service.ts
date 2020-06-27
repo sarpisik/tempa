@@ -38,6 +38,15 @@ export default class CarService {
 
         return car;
     }
+    async deleteOne(_id: string | number) {
+        const id = strToNum(_id);
+        const cars = this._db.cars;
+        const carIndex = cars.findIndex((car) => car.id === id);
+
+        if (carIndex < 0) throw new BadRequestError();
+
+        cars.splice(carIndex, 1);
+    }
 }
 
 function strToNum(data: string | number): number {

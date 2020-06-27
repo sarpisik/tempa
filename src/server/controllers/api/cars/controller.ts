@@ -16,6 +16,7 @@ export default class CarController extends Controller {
         this.router.get(this.path, this._getAllCars);
         this.router.post(this.path, this._createCar);
         this.router.put(this.path + '/:id', this._updateCar);
+        this.router.delete(this.path + '/:id', this._deleteCar);
     };
 
     private _getAllCars = withCatch(async (_req: Request, res: Response) => {
@@ -44,6 +45,16 @@ export default class CarController extends Controller {
             const car = await this._carService.updateOne(id, body.car);
 
             res.status(OK).json({ car });
+        }
+    );
+
+    private _deleteCar = withCatch(
+        async ({ params: { id } }: Request, res: Response) => {
+            if (!id) throw new BadRequestError();
+
+            await this._carService.deleteOne(id);
+
+            res.sendStatus(OK);
         }
     );
 }

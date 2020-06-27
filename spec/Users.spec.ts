@@ -2,18 +2,16 @@ import supertest from 'supertest';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
 
-import app from '@server';
 import { pErr, readCars } from '@shared/functions';
 import { paramMissingError } from '@shared/constants';
 import CarService from 'src/server/controllers/api/cars/service';
 import server from '@server';
 
 describe('Cars Routes', () => {
-    const updateCarId = 10;
     const carsPath = '/api/cars';
-    const addcarsPath = `${carsPath}/`;
-    const updateCarPath = `${carsPath}/${updateCarId}`;
-    const deleteUserPath = `${carsPath}/delete/:id`;
+    const addcarsPath = `${carsPath}`;
+    const updateCarPath = `${carsPath}/:id`;
+    const deleteCarPath = `${carsPath}/:id`;
 
     let agent: SuperTest<Test>;
 
@@ -109,13 +107,16 @@ describe('Cars Routes', () => {
     });
 
     describe(`"PUT:${updateCarPath}"`, () => {
-        const callApi = (reqBody: Record<string, unknown>) => {
-            return agent.put(updateCarPath).type('form').send(reqBody);
+        const callApi = (id: number, reqBody: Record<string, unknown>) => {
+            return agent
+                .put(updateCarPath.replace(':id', id.toString()))
+                .type('form')
+                .send(reqBody);
         };
 
         const body = {
             car: {
-                id: updateCarId,
+                id: 10,
                 car_model: 'Scirocco',
                 car_make: 'Volkswagen',
                 car_model_year: 1988,
@@ -127,7 +128,7 @@ describe('Cars Routes', () => {
                 Promise.resolve(body.car)
             );
 
-            callApi(body).end((err: Error, res: Response) => {
+            callApi(body.car.id, body).end((err: Error, res: Response) => {
                 pErr(err);
                 expect(res.status).toBe(OK);
                 expect(res.body.car).toEqual(body.car);
@@ -138,7 +139,7 @@ describe('Cars Routes', () => {
 
         it(`should return a JSON object with an error message of "${paramMissingError}" and a
             status code of "${BAD_REQUEST}" if the car param was missing.`, (done) => {
-            callApi({}).end((err: Error, res: Response) => {
+            callApi(body.car.id, {}).end((err: Error, res: Response) => {
                 pErr(err);
                 expect(res.status).toBe(BAD_REQUEST);
                 expect(res.body.error).toBe(paramMissingError);
@@ -153,7 +154,7 @@ describe('Cars Routes', () => {
                 updateErrMsg
             );
 
-            callApi(body).end((err: Error, res: Response) => {
+            callApi(body.car.id, body).end((err: Error, res: Response) => {
                 pErr(err);
                 expect(res.status).toBe(BAD_REQUEST);
                 expect(res.body.error).toBe(updateErrMsg);
@@ -162,35 +163,37 @@ describe('Cars Routes', () => {
         });
     });
 
-    // describe(`"DELETE:${deleteUserPath}"`, () => {
-    //     const callApi = (id: number) => {
-    //         return agent.delete(deleteUserPath.replace(':id', id.toString()));
-    //     };
+    describe(`"DELETE:${deleteCarPath}"`, () => {
+        const callApi = (id: number) => {
+            return agent.delete(deleteCarPath.replace(':id', id.toString()));
+        };
 
-    //     it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
-    //         spyOn(UserDao.prototype, 'delete').and.returnValue(
-    //             Promise.resolve()
-    //         );
+        it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
+            spyOn(CarService.prototype, 'deleteOne').and.returnValue(
+                Promise.resolve()
+            );
 
-    //         callApi(5).end((err: Error, res: Response) => {
-    //             pErr(err);
-    //             expect(res.status).toBe(OK);
-    //             expect(res.body.error).toBeUndefined();
-    //             done();
-    //         });
-    //     });
+            callApi(5).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(OK);
+                expect(res.body.error).toBeUndefined();
+                done();
+            });
+        });
 
-    //     it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
-    //         if the request was unsuccessful.`, (done) => {
-    //         const deleteErrMsg = 'Could not delete user.';
-    //         spyOn(UserDao.prototype, 'delete').and.throwError(deleteErrMsg);
+        it(`should return a JSON object with an error message and a status code of "${BAD_REQUEST}"
+            if the request was unsuccessful.`, (done) => {
+            const deleteErrMsg = 'Could not delete car.';
+            spyOn(CarService.prototype, 'deleteOne').and.throwError(
+                deleteErrMsg
+            );
 
-    //         callApi(1).end((err: Error, res: Response) => {
-    //             pErr(err);
-    //             expect(res.status).toBe(BAD_REQUEST);
-    //             expect(res.body.error).toBe(deleteErrMsg);
-    //             done();
-    //         });
-    //     });
-    // });
+            callApi(1).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(BAD_REQUEST);
+                expect(res.body.error).toBe(deleteErrMsg);
+                done();
+            });
+        });
+    });
 });
