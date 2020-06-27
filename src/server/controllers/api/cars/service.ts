@@ -1,54 +1,38 @@
 import { ICar } from './interface';
-import { Car } from './model';
-import { BadRequestError } from '@shared/error';
+import { Table } from 'src/server/db/database';
 
 export default class CarService {
-    constructor(private _db: { cars: ICar[] }) {}
+    constructor(private _table: Table) {}
 
-    findMany(): Promise<ICar[]> {
-        return Promise.resolve(this._db.cars);
+    findMany() {
+        return this._table
+            .query<ICar>('SELECT * FROM cars ORDER BY model ASC')
+            .then((result) => result.rows);
     }
     async createOne(
         car_model: string,
         car_make: string,
         car_model_year: string | number
     ) {
-        const car = await new Car(
-            car_model,
-            car_make,
-            strToNum(car_model_year)
+        const result = await this._table.query<ICar>(
+            'INSERT INTO cars (model, make, model_year) VALUES ($1, $2, $3) RETURNING *',
+            [car_model, car_make, car_model_year]
         );
-        this._db.cars.push(car);
-        return car;
+
+        return result.rows[0];
     }
-    async updateOne(_id: string | number, updateCar: Omit<ICar, 'id'>) {
-        const id = strToNum(_id);
-        const cars = this._db.cars;
-        const car = cars.find((car) => car.id === id);
+    async updateOne(
+        id: string | number,
+        { model, make, model_year }: Omit<ICar, 'id'>
+    ) {
+        const result = await this._table.query<ICar>(
+            'UPDATE cars SET model = $1, make = $2, model_year = $3 WHERE id = $4 RETURNING *',
+            [model, make, model_year, id]
+        );
 
-        if (!car) throw new BadRequestError();
-
-        const keys = Object.keys(updateCar) as Array<keyof typeof updateCar>;
-
-        for await (const key of keys) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            car[key] = updateCar[key];
-        }
-
-        return car;
+        return result.rows[0];
     }
-    async deleteOne(_id: string | number) {
-        const id = strToNum(_id);
-        const cars = this._db.cars;
-        const carIndex = cars.findIndex((car) => car.id === id);
-
-        if (carIndex < 0) throw new BadRequestError();
-
-        cars.splice(carIndex, 1);
+    async deleteOne(id: string | number) {
+        return this._table.query('DELETE FROM cars WHERE id = $1', [id]);
     }
-}
-
-function strToNum(data: string | number): number {
-    return typeof data === 'number' ? data : parseInt(data);
 }

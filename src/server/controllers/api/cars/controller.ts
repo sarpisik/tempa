@@ -10,7 +10,6 @@ import { ICar } from './interface';
 
 type CarParam = { id: string };
 type CarBody = { car: ICar };
-type CarsBody = { cars: ICar[] };
 
 export default class CarController extends Controller {
     constructor(router: RouterType, private _carService: CarService) {
@@ -26,34 +25,34 @@ export default class CarController extends Controller {
         this.router.delete(this.path + '/:id', this._deleteCar);
     };
 
-    private _getAllCars = withCatch<any, CarsBody>(async (_req, res) => {
+    private _getAllCars = withCatch<any, ICar[]>(async (_req, res) => {
         const cars = await this._carService.findMany();
-        res.json({ cars });
+        res.json(cars);
     });
 
-    private _createCar = withCatch<any, CarBody, { car?: Omit<ICar, 'id'> }>(
+    private _createCar = withCatch<any, ICar, { car?: Omit<ICar, 'id'> }>(
         async ({ body }, res) => {
             if (!body.car) throw new BadRequestError();
 
-            const { car_model, car_make, car_model_year } = body.car;
+            const { model, make, model_year } = body.car;
 
             const car = await this._carService.createOne(
-                car_model,
-                car_make,
-                car_model_year
+                model,
+                make,
+                model_year
             );
 
-            res.status(CREATED).json({ car });
+            res.status(CREATED).json(car);
         }
     );
 
-    private _updateCar = withCatch<CarParam, CarBody, CarBody>(
+    private _updateCar = withCatch<CarParam, ICar, CarBody>(
         async ({ body, params: { id } }, res) => {
             if (!body.car) throw new BadRequestError();
 
             const car = await this._carService.updateOne(id, body.car);
 
-            res.status(OK).json({ car });
+            res.status(OK).json(car);
         }
     );
 

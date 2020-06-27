@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
@@ -7,6 +7,8 @@ const pool = new Pool({
     password: process.env.PGADMIN_DEFAULT_PASSWORD,
     port: 5432,
 });
+
+export type Table = PoolClient;
 
 export default function database() {
     return pool.connect();
