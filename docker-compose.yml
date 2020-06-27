@@ -1,15 +1,31 @@
 version: '3'
-
 services:
-    mongo:
-        container_name: mongoDB
-        image: mongo:4.2
-        restart: always
-        volumes:
-            - mongodb-data:/data/db
-        env_file:
-            - .env.development
+    postgres:
+        container_name: postgres
+        image: postgres:latest
         ports:
-            - 27017:27017
-volumes:
-    mongodb-data:
+            - '5432:5432'
+        volumes:
+            - /data/postgres:/data/postgres
+        env_file:
+            - docker.env
+        networks:
+            - postgres
+
+    pgadmin:
+        links:
+            - postgres:postgres
+        container_name: pgadmin
+        image: dpage/pgadmin4
+        ports:
+            - '8080:80'
+        volumes:
+            - /data/pgadmin:/root/.pgadmin
+        env_file:
+            - docker.env
+        networks:
+            - postgres
+
+networks:
+    postgres:
+        driver: bridge
