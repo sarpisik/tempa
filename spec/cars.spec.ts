@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import { BAD_REQUEST, CREATED, OK } from 'http-status-codes';
 import { Response, SuperTest, Test } from 'supertest';
 
-import { pErr, readCars } from '@shared/functions';
+import { pErr } from '@shared/functions';
 import { paramMissingError } from '@shared/constants';
 import CarService from 'src/server/controllers/api/cars/service';
 import server from '@server';
@@ -18,20 +18,29 @@ describe('Cars Routes', () => {
     beforeAll((done) => {
         server().then((app) => {
             agent = supertest.agent(app);
+
             done();
         });
     });
 
     describe(`"GET:${carsPath}"`, () => {
-        it(`should return a JSON object with all the users and a status code of "${OK}" if the
+        const cars = [
+            {
+                id: 1,
+                model: 'Scirocco',
+                make: 'Volkswagen',
+                model_year: 1988,
+            },
+        ];
+        it(`should return a JSON object with all the cars and a status code of "${OK}" if the
             request was successful.`, (done) => {
-            readCars().then(() => {
-                agent.get(carsPath).end((err: Error, res: Response) => {
-                    pErr(err);
-                    expect(res.status).toBe(OK);
-                    expect(res.body.error).toBeUndefined();
-                    done();
-                });
+            spyOn(CarService.prototype, 'findMany').and.resolveTo(cars);
+            agent.get(carsPath).end((err: Error, res: Response) => {
+                pErr(err);
+                expect(res.status).toBe(OK);
+                expect(res.body).toEqual(cars);
+                expect(res.body.error).toBeUndefined();
+                done();
             });
         });
 
@@ -56,9 +65,9 @@ describe('Cars Routes', () => {
 
         const body = {
             car: {
-                car_model: 'Scirocco',
-                car_make: 'Volkswagen',
-                car_model_year: 1988,
+                model: 'Scirocco',
+                make: 'Volkswagen',
+                model_year: 1988,
             },
         };
 
@@ -66,6 +75,10 @@ describe('Cars Routes', () => {
             const keys = Object.keys(body.car) as Array<
                 keyof typeof body['car']
             >;
+            spyOn(CarService.prototype, 'createOne').and.resolveTo({
+                ...body.car,
+                id: 1,
+            });
 
             agent
                 .post(addcarsPath)
@@ -75,7 +88,7 @@ describe('Cars Routes', () => {
                     pErr(err);
                     expect(res.status).toBe(CREATED);
                     keys.forEach((key) => {
-                        expect(body.car[key]).toBe(res.body.car[key]);
+                        expect(body.car[key]).toBe(res.body[key]);
                     });
                     expect(res.body.error).toBeUndefined();
                     done();
@@ -117,21 +130,19 @@ describe('Cars Routes', () => {
         const body = {
             car: {
                 id: 10,
-                car_model: 'Scirocco',
-                car_make: 'Volkswagen',
-                car_model_year: 1988,
+                model: 'Scirocco',
+                make: 'Volkswagen',
+                model_year: 1988,
             },
         };
 
         it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
-            spyOn(CarService.prototype, 'updateOne').and.returnValue(
-                Promise.resolve(body.car)
-            );
+            spyOn(CarService.prototype, 'updateOne').and.resolveTo(body.car);
 
             callApi(body.car.id, body).end((err: Error, res: Response) => {
                 pErr(err);
                 expect(res.status).toBe(OK);
-                expect(res.body.car).toEqual(body.car);
+                expect(res.body).toEqual(body.car);
                 expect(res.body.error).toBeUndefined();
                 done();
             });
@@ -169,9 +180,7 @@ describe('Cars Routes', () => {
         };
 
         it(`should return a status code of "${OK}" if the request was successful.`, (done) => {
-            spyOn(CarService.prototype, 'deleteOne').and.returnValue(
-                Promise.resolve()
-            );
+            spyOn(CarService.prototype, 'deleteOne').and.resolveTo();
 
             callApi(5).end((err: Error, res: Response) => {
                 pErr(err);

@@ -4,10 +4,11 @@ import { Table } from 'src/server/db/database';
 export default class CarService {
     constructor(private _table: Table) {}
 
-    findMany() {
-        return this._table
-            .query<ICar>('SELECT * FROM cars ORDER BY model ASC')
-            .then((result) => result.rows);
+    async findMany() {
+        const result = await this._table.query<ICar>(
+            'SELECT * FROM cars ORDER BY model ASC'
+        );
+        return result.rows;
     }
     async createOne(
         car_model: string,
