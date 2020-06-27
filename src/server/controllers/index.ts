@@ -1,6 +1,5 @@
 import generateApiControllers from './api';
 import { pageControllers } from './pages';
-import { Database } from '@shared/types';
 
 export default function controllers(
     db: Parameters<typeof generateApiControllers>[0]
