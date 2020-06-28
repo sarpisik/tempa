@@ -15,7 +15,7 @@ export const getRandomInt = (): number => {
 export function readCars<T>() {
     return new Promise<T[]>(function findManyPromise(resolve, reject) {
         fs.readFile(
-            path.resolve(__dirname, '../database/cars.json'),
+            path.resolve(__dirname, '../db/cars.json'),
             function onCarsFileRead(err, raw) {
                 if (err) {
                     reject(err);
